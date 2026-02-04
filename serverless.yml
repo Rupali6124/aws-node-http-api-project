@@ -1,0 +1,54 @@
+org: xyz
+app: aws-node-http-api-project
+service: aws-node-http-api-project
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource:
+        - arn:aws:dynamodb:us-east-1:<AccountID>:table/KaamKaro
+
+functions:
+  hello:
+    handler: src/hello.handler
+    events:
+      - httpApi:
+          path: /
+          method: get
+  kaamkaro:
+    handler: src/kaamkaro.handler
+    events:
+      - httpApi:
+          path: /kaam
+          method: post
+  kaamdikhao:
+    handler: src/kaamdikhao.handler
+    events:
+      - httpApi:
+          path: /kaam
+          method: get
+  kaamcomplete:
+    handler: src/kaamcomplete.handler
+    events:
+      - httpApi:
+          path: /kaam/{id}
+          method: put
+
+resources:
+  Resources:
+    KaamKaro:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: KaamKaro
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
